@@ -49,14 +49,11 @@ class TSPSolver
         @distance_matrix[i][i] = 0
       end
     end
-    
-    # Skip interactive prompt for non-interactive mode
     is_undirected = false
     if interactive
       puts "\nIs the graph undirected? (distances are the same in both directions) [y/n]:"
       is_undirected = gets.chomp.downcase == 'y'
     else
-      # Check if matrix is symmetric
       is_symmetric = true
       @n.times do |i|
         (i+1...@n).each do |j|
@@ -67,8 +64,6 @@ class TSPSolver
         end
         break unless is_symmetric
       end
-      
-      # Assume undirected if matrix is symmetric
       is_undirected = is_symmetric
       puts "Matrix analyzed as #{is_undirected ? 'undirected' : 'directed'} graph"
     end
@@ -151,8 +146,6 @@ class TSPSolver
         end
           @distance_matrix << row
       end
-      
-      # Call validate_matrix in non-interactive mode
       validate_matrix(false)
       display_matrix
       return true
