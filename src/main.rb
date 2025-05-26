@@ -36,15 +36,13 @@ class TSPSolver
         else
           @distance_matrix << row
           break
-        end
-      end
+        end      end
     end
     
-    validate_matrix()
+    validate_matrix(true)
     display_matrix()
   end
-
-  def validate_matrix
+  def validate_matrix(interactive = true)
     @n.times do |i|
       if @distance_matrix[i][i] != 0
         puts "Warning: Distance from city #{i+1} to itself should be 0, correcting automatically"
@@ -52,8 +50,30 @@ class TSPSolver
       end
     end
     
-    puts "\nIs the graph undirected? (distances are the same in both directions) [y/n]:"
-    if gets.chomp.downcase == 'y'
+    # Skip interactive prompt for non-interactive mode
+    is_undirected = false
+    if interactive
+      puts "\nIs the graph undirected? (distances are the same in both directions) [y/n]:"
+      is_undirected = gets.chomp.downcase == 'y'
+    else
+      # Check if matrix is symmetric
+      is_symmetric = true
+      @n.times do |i|
+        (i+1...@n).each do |j|
+          if @distance_matrix[i][j] != @distance_matrix[j][i]
+            is_symmetric = false
+            break
+          end
+        end
+        break unless is_symmetric
+      end
+      
+      # Assume undirected if matrix is symmetric
+      is_undirected = is_symmetric
+      puts "Matrix analyzed as #{is_undirected ? 'undirected' : 'directed'} graph"
+    end
+    
+    if is_undirected
       @n.times do |i|
         (i+1...@n).each do |j|
           if @distance_matrix[i][j] != @distance_matrix[j][i]
@@ -72,7 +92,7 @@ class TSPSolver
         end
       end
     end
-  end  
+  end
   def display_matrix
     puts "\nDistance Matrix:"
     
@@ -129,11 +149,11 @@ class TSPSolver
           puts "Error: Row #{i+1} has incorrect number of values"
           return false
         end
-        
-        @distance_matrix << row
+          @distance_matrix << row
       end
       
-      validate_matrix
+      # Call validate_matrix in non-interactive mode
+      validate_matrix(false)
       display_matrix
       return true
       rescue => e
